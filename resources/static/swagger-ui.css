@@ -40,7 +40,7 @@
     transition: all 0.2s;
 }
 
-#myTab .tab-content:first-child {
+#myTab >.tab-content {
     padding-top: 50px;
 }
 
