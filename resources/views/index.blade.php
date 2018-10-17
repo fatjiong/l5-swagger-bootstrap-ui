@@ -30,34 +30,35 @@
         <table class="table table-hover table-bordered table-text-center">
             <thead>
             <tr>
-                <th colspan="2" style="text-align:center">Swagger-Bootstrap-UI-前后端api接口文档</th>
+                <th colspan="2" style="text-align:center">{{config('l5-swagger.api.title')}}</th>
             </tr>
 
             </thead>
             <tbody>
             <tr>
                 <th class="active" width="15%">项目名称</th>
-                <td style="text-align: left">Swagger-Bootstrap-UI RESTful APIs</td>
+                <td style="text-align: left">L5-Swagger-Bootstrap-UI RESTful APIs</td>
             </tr>
             <tr>
                 <th class="active">简介</th>
-                <td style="text-align: left">Swagger-Bootstrap-UI RESTful APIs</td>
+                <td style="text-align: left">L5-Swagger-Bootstrap-UI RESTful APIs</td>
             </tr>
             <tr>
                 <th class="active">作者</th>
-                <td style="text-align: left">developer@gmail.com</td>
+                <td style="text-align: left"><a href="https://github.com/laraveler" target="_blank">https://github.com/laraveler</a>
+                </td>
             </tr>
             <tr>
                 <th class="active">版本</th>
-                <td style="text-align: left">1.0</td>
+                <td style="text-align: left"></td>
             </tr>
             <tr>
                 <th class="active">host</th>
-                <td style="text-align: left">127.0.0.1:8280</td>
+                <td style="text-align: left"></td>
             </tr>
             <tr>
                 <th class="active">服务url</th>
-                <td style="text-align: left">http://localhost:8800/</td>
+                <td style="text-align: left"></td>
             </tr>
             </tbody>
         </table>
