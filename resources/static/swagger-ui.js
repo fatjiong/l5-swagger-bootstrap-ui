@@ -690,7 +690,7 @@
                         var contentType = xhr.getResponseHeader("Content-Type");
                         DApiUI.log("Content-Type:" + contentType);
                         DApiUI.log(xhr.hasOwnProperty("responseJSON"))
-                        if (xhr.hasOwnProperty("responseJSON")) {
+                        if (contentType.toLowerCase() == "application/json") {
                             //如果存在该对象,服务端返回为json格式
                             resp1.find(".panel-body").html("")
                             DApiUI.log(xhr["responseJSON"])
