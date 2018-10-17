@@ -22,7 +22,7 @@
 
             }
         })
-        $("#menu").on('click','.dropdown-toggle',function () {
+        $("#menu").on('click', '.dropdown-toggle', function () {
             $("#menu").find('.dropdown-toggle').each(function () {
                 $(this).removeClass('open')
                 $(this).next('ul').hide()
@@ -696,8 +696,13 @@
                             DApiUI.log(xhr["responseJSON"])
                             var pre = $('<pre></pre>')
                             var jsondiv = $('<div></div>')
-                            jsondiv.JSONView(xhr["responseJSON"]);
-                            pre.html(JSON.stringify(xhr["responseJSON"], null, 2));
+                            if (xhr.hasOwnProperty("responseJSON")) {
+                                jsondiv.JSONView(xhr["responseJSON"]);
+                                pre.html(JSON.stringify(xhr["responseJSON"], null, 2));
+                            } else {
+                                jsondiv.JSONView(xhr["responseText"]);
+                                pre.html(JSON.stringify(xhr["responseText"], null, 2));
+                            }
                             resp1.find(".panel-body").append(jsondiv);
                         } else {
                             //判断content-type
@@ -781,9 +786,9 @@
                             resp1.find(".panel-body").html("")
                             DApiUI.log(xhr["responseJSON"])
                             var jsondiv = $('<div></div>')
-                            if(xhr.hasOwnProperty("responseText")){
+                            if (xhr.hasOwnProperty("responseText")) {
                                 jsondiv.JSONView(xhr["responseText"]);
-                            }else{
+                            } else {
                                 jsondiv.JSONView(xhr["responseJSON"]);
                             }
                             resp1.find(".panel-body").append(jsondiv);
@@ -846,7 +851,7 @@
 
     DApiUI.createApiInfoTable = function (apiInfo) {
         var table = $('<table class="table table-hover table-bordered table-text-center"></table>');
-        var thead = $('<thead><tr><th colspan="2" style="text-align:center">'+DApiUI.getStringValue(apiInfo.summary)+'</th></tr></thead>');
+        var thead = $('<thead><tr><th colspan="2" style="text-align:center">' + DApiUI.getStringValue(apiInfo.summary) + '</th></tr></thead>');
         table.append(thead);
         var tbody = $('<tbody></tbody>');
 
