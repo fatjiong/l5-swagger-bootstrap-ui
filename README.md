@@ -1,5 +1,8 @@
 # l5-swagger-bootstrap-ui
 
+[![Latest Version on Packagist][ico-version]][link-packagist]
+[![Total Downloads][ico-downloads]][link-downloads]
+[![Software License][ico-license]](LICENSE)
 
 ## 简介
 
