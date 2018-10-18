@@ -495,10 +495,10 @@
             //组装请求url
             var url = DApiUI.getStringValue(apiInfo.url);
             var cacheData = DApiUI.getDoc().data("data");
-            if (cacheData.hasOwnProperty("servers")) {
-                if (cacheData.servers[0].url != "/") {
+            if (typeof (cacheData.basePath) != "undefined" && cacheData.basePath != "") {
+                if (cacheData.basePath != "/") {
                     DApiUI.log("NOT ROOT PATH:");
-                    url = cacheData.servers[0].url + DApiUI.getStringValue(apiInfo.url);
+                    url = cacheData.basePath + DApiUI.getStringValue(apiInfo.url);
                 }
             }
 
