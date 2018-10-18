@@ -15,9 +15,9 @@ class L5SwaggerBootStrapUiServiceProvider extends ServiceProvider
     public function boot()
     {
         if ($this->app->runningInConsole()) {
-            $blade=config('l5-swagger.paths.views') . '/index.blade.php';
-            if (File::exists($blade)) {
-                File::delete($blade);
+            $docDir=config('l5-swagger.paths.views');
+            if (File::exists($docDir)) {
+                File::deleteDirectory($docDir);
             }
         }
         $viewPath = __DIR__ . '/../resources/views';
