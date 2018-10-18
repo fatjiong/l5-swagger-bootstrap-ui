@@ -96,10 +96,14 @@
             name = "",
             version = "",
             termsOfService = "";
-        var host = DApiUI.getValue(menu, "host", "", true);
+        if (menu.hasOwnProperty("servers")) {
+            var host = DApiUI.getValue(menu.servers[0], "url", "", true);
+        } else {
+            var host = DApiUI.getValue(menu, "host", "", true);
+        }
         if (menu.hasOwnProperty("info")) {
             var info = menu.info;
-            title = DApiUI.getValue(info, "title", "Swagger-Bootstrap-UI-前后端api接口文档", true);
+            title = DApiUI.getValue(info, "title", "", true);
             description = DApiUI.getValue(info, "description", "", true);
             if (info.hasOwnProperty("contact")) {
                 var contact = info["contact"];
@@ -109,21 +113,19 @@
             termsOfService = DApiUI.getValue(info, "termsOfService", "", true);
         }
         //修改title
-        $("title").html("").html(title)
+        $("title").html(title)
         table.append($('<thead><tr><th colspan="2" style="text-align:center">' + title + '</th></tr></thead>'));
         var tbody = $('<tbody></tbody>');
         tbody.append($('<tr><th class="active" width="15%">简介</th><td class="text-left">' + description + '</td></tr>'));
         tbody.append($('<tr><th class="active">作者</th><td class="text-left">' + name + '</td></tr>'));
         tbody.append($('<tr><th class="active">版本</th><td class="text-left">' + version + '</td></tr>'));
-        tbody.append($('<tr><th class="active">host</th><td class="text-left">' + host + '</td></tr>'))
-        tbody.append($('<tr><th class="active">服务url</th><td class="text-left">' + termsOfService + '</td></tr>'));
+        tbody.append($('<tr><th class="active">Host</th><td class="text-left">' + host + '</td></tr>'))
+        tbody.append($('<tr><th class="active">TermsOfService</th><td class="text-left">' + termsOfService + '</td></tr>'));
         table.append(tbody);
-        var div = $('<div  style="width:99%;margin:0px auto;"></div>')
+        var div = $('<div  style="width:99%;margin:0 auto;"></div>')
         div.append(table);
         //内容覆盖
-        DApiUI.getDoc().html("");
-        DApiUI.getDoc().append(div);
-        DApiUI.getDoc().data("data", menu);
+        DApiUI.getDoc().html("").append(div).data("data", menu);
     }
 
     /***
@@ -176,14 +178,14 @@
             var len = tagInfo.childrens.length;
             if (len == 0) {
                 var li = $('<li ><a href="javascript:void(0)"><i class="icon-text-width"></i><span class="menu-text"> ' +
-                    tagInfo.name + ' </span></a></li>');
+                    tagInfo.description.substr(0,12) + '[' + tagInfo.name + ']' + ' </span></a></li>');
                 DApiUI.getMenu().append(li);
             } else {
                 //存在子标签
                 var li = $('<li></li>');
                 var titleA = $(
                     '<a href="#" class="dropdown-toggle"><i class="icon-file-alt"></i><span class="menu-text">' +
-                    tagInfo.name + '<span class="badge badge-primary ">' + len +
+                    tagInfo.description.substr(0,12) + '[' + tagInfo.name + ']' + '<span class="badge badge-primary ">' + len +
                     '</span></span><b class="arrow icon-angle-down"></b></a>');
                 li.append(titleA);
                 //循环树
@@ -924,7 +926,7 @@
                 var ptr = null;
                 //列出属性
                 if (refflag) {
-                    ptr = $('<tr><td>' + param.name + '</td><td style="text-align: center;">' + DApiUI.getStringValue(
+                    ptr = $('<tr><td>' + param.name + '</td><td>' + DApiUI.getStringValue(
                         param['description']) + '</td><td>' + ptype + '</td><td>' + DApiUI.getStringValue(param['in']) +
                         '</td><td>' + param['required'] + '</td></tr>');
                     pbody.append(ptr);
