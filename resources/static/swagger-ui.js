@@ -1,5 +1,5 @@
 /**
- * Created by xiaoym on 2017/4/17.
+ * Created by 阿伟先生 on 2018/10/18.
  */
 
 (function ($) {
@@ -46,7 +46,7 @@
         var tabcontent = $('<div class="tab-content"></div>');
 
         tabcontent.append($(
-            '<div id="tab1" class="tab-pane"><div class="panel-body no-padding"><strong>接口详细说明</strong><p>Bootstrap 使用到的某些 HTML 元素和 CSS 属性需要将页面设置为 HTML5 文档类型。在你项目中的每个页面都要参照下面的格式进行设置。</p></div></div>'));
+            '<div id="tab1" class="tab-pane"><div class="panel-body no-padding"><strong>接口详细说明</strong></div></div>'));
         tabcontent.append($(
             '<div id="tab2" class="tab-pane"><div class="panel-body no-padding"><strong>正在开发中,敬请期待......</strong></div></div>'));
         divcontent.append(tabcontent);
@@ -96,11 +96,6 @@
             name = "",
             version = "",
             termsOfService = "";
-        if (menu.hasOwnProperty("servers")) {
-            var host = DApiUI.getValue(menu.servers[0], "url", "", true);
-        } else {
-            var host = DApiUI.getValue(menu, "host", "", true);
-        }
         if (menu.hasOwnProperty("info")) {
             var info = menu.info;
             title = DApiUI.getValue(info, "title", "", true);
@@ -116,10 +111,18 @@
         $("title").html(title)
         table.append($('<thead><tr><th colspan="2" style="text-align:center">' + title + '</th></tr></thead>'));
         var tbody = $('<tbody></tbody>');
-        tbody.append($('<tr><th class="active" width="15%">简介</th><td class="text-left">' + description + '</td></tr>'));
         tbody.append($('<tr><th class="active">作者</th><td class="text-left">' + name + '</td></tr>'));
         tbody.append($('<tr><th class="active">版本</th><td class="text-left">' + version + '</td></tr>'));
-        tbody.append($('<tr><th class="active">Host</th><td class="text-left">' + host + '</td></tr>'))
+        tbody.append($('<tr><th class="active" width="15%">简介</th><td class="text-left">' + description + '</td></tr>'));
+        if (menu.hasOwnProperty("servers")) {
+            $.each(menu.servers, function (i) {
+                var server_url = DApiUI.getValue(menu.servers[i], "url", "", true);
+                var server_description = DApiUI.getValue(menu.servers[i], "description", "", true);
+                tbody.append($('<tr><th class="active">Server</th><td class="text-left">' + server_url + ' <code> ' + server_description + ' </code> </td></tr>'))
+            });
+        } else {
+            tbody.append($('<tr><th class="active">Server</th><td class="text-left"></td></tr>'))
+        }
         tbody.append($('<tr><th class="active">TermsOfService</th><td class="text-left">' + termsOfService + '</td></tr>'));
         table.append(tbody);
         var div = $('<div  style="width:99%;margin:0 auto;"></div>')
@@ -152,7 +155,7 @@
      */
     DApiUI.initTreeMenu = function (menu) {
         //遍历tags
-        var tags = new Array();
+        DApiUI.getMenu().html("");
         //简介li
         var dli = $(
             '<li class="active"><a href="javascript:void(0)"><i class="icon-text-width"></i><span class="menu-text"> 简介 </span></a></li>')
@@ -162,7 +165,6 @@
             DApiUI.createDescription(menu);
             dli.addClass("active");
         })
-        DApiUI.getMenu().html("");
         DApiUI.getMenu().append(dli);
         var methodApis = DApiUI.eachPath(menu);
 
@@ -178,14 +180,14 @@
             var len = tagInfo.childrens.length;
             if (len == 0) {
                 var li = $('<li ><a href="javascript:void(0)"><i class="icon-text-width"></i><span class="menu-text"> ' +
-                    tagInfo.description.substr(0,12) + '[' + tagInfo.name + ']' + ' </span></a></li>');
+                    tagInfo.description.substr(0, 12) + '[' + tagInfo.name + ']' + ' </span></a></li>');
                 DApiUI.getMenu().append(li);
             } else {
                 //存在子标签
                 var li = $('<li></li>');
                 var titleA = $(
                     '<a href="#" class="dropdown-toggle"><i class="icon-file-alt"></i><span class="menu-text">' +
-                    tagInfo.description.substr(0,12) + '[' + tagInfo.name + ']' + '<span class="badge badge-primary ">' + len +
+                    tagInfo.description.substr(0, 12) + '[' + tagInfo.name + ']' + '<span class="badge badge-primary ">' + len +
                     '</span></span><b class="arrow icon-angle-down"></b></a>');
                 li.append(titleA);
                 //循环树
@@ -482,7 +484,6 @@
             var params = {};
             var headerparams = {};
             var bodyparams = "";
-            //modify by xiaoyumin 2017-8-9 11:28:16
             //增加表单验证
             var validateflag = false;
             var validateobj = {};
@@ -494,13 +495,12 @@
             //组装请求url
             var url = DApiUI.getStringValue(apiInfo.url);
             var cacheData = DApiUI.getDoc().data("data");
-            if (typeof (cacheData.basePath) != "undefined" && cacheData.basePath != "") {
-                if (cacheData.basePath != "/") {
+            if (cacheData.hasOwnProperty("servers")) {
+                if (cacheData.servers[0].url != "/") {
                     DApiUI.log("NOT ROOT PATH:");
-                    url = cacheData.basePath + DApiUI.getStringValue(apiInfo.url);
+                    url = cacheData.servers[0].url + DApiUI.getStringValue(apiInfo.url);
                 }
             }
-
 
             paramBody.find("tr").each(function () {
                 var paramtr = $(this);
@@ -781,9 +781,8 @@
                         }
                         var contentType = xhr.getResponseHeader("Content-Type");
                         DApiUI.log("Content-Type:" + contentType);
-                        var jsonRegex = "";
                         DApiUI.log(xhr.hasOwnProperty("responseJSON"))
-                        if (xhr.hasOwnProperty("responseJSON") || xhr.hasOwnProperty("responseText")) {
+                        if (contentType != null && contentType.toLowerCase() == "application/json") {
                             //如果存在该对象,服务端返回为json格式
                             resp1.find(".panel-body").html("")
                             DApiUI.log(xhr["responseJSON"])
