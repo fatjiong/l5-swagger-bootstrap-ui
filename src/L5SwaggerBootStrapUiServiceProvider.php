@@ -16,12 +16,12 @@ class L5SwaggerBootStrapUiServiceProvider extends ServiceProvider
     {
         if ($this->app->runningInConsole()) {
             $docDir=config('l5-swagger.paths.views');
-            if (File::exists($docDir)) {
+            if (File::exists($docDir) && !File::exists($docDir.'/.bsui')) {
                 File::deleteDirectory($docDir);
             }
         }
         $viewPath = __DIR__ . '/../resources/views';
-        $this->loadViewsFrom($viewPath, 'l5-swagger-ui');
+        $this->loadViewsFrom($viewPath, 'l5-swagger-bootstrap-ui');
 
         //Publish views
         $this->publishes([

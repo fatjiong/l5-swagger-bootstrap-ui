@@ -950,7 +950,7 @@
                         }
                     }
                 } else {
-                    ptr = $('<tr><td>' + param.name + '</td><td style="text-align: center;">' + DApiUI.getStringValue(
+                    ptr = $('<tr><td>' + param.name + '</td><td>' + DApiUI.getStringValue(
                         param['description']) + '</td><td>' + ptype + '</td><td>' + DApiUI.getStringValue(param['in']) +
                         '</td><td>' + param['required'] + '</td></tr>');
                     pbody.append(ptr);

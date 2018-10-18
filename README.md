@@ -18,7 +18,7 @@ Javascript逻辑参考项目 [https://github.com/xiaoymin/Swagger-Bootstrap-UI](
 
 项目依赖于 [https://github.com/DarkaOnLine/L5-Swagger](https://github.com/DarkaOnLine/L5-Swagger)，
 安装`l5-swagger-bootstrap-ui`的时候，`L5-Swagger`会被自动安装，关于`L5-Swagger`的配置及`api-docs.json`文件的生成，
-都参考`L5-Swagger`[https://github.com/DarkaOnLine/L5-Swagger/blob/master/README.md](使用说明)。
+都参考`L5-Swagger`[https://github.com/DarkaOnLine/L5-Swagger/blob/master/README.md]
 
 
 
@@ -44,7 +44,7 @@ Javascript逻辑参考项目 [https://github.com/xiaoymin/Swagger-Bootstrap-UI](
 `php artisan l5-swagger:generate`
 
 * 浏览器打开网址`http://youdomain/api/documentation`即可访问，如果要修改网址或其他配置信息，
-请参考`L5-Swagger`[https://github.com/DarkaOnLine/L5-Swagger/blob/master/README.md](使用说明)
+请参考`L5-Swagger`[https://github.com/DarkaOnLine/L5-Swagger/blob/master/README.md]
 
 
 ## 注意：
