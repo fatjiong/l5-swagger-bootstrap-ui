@@ -360,7 +360,7 @@
                     if (param.hasOwnProperty("schema")) {
                         var schema = param["schema"];
                         var ref = schema["$ref"];
-                        var regex = new RegExp("#/definitions/(.*)$", "ig");
+                        var regex = new RegExp("#/components/schemas/(.*)$", "ig");
                         if (regex.test(ref)) {
                             var refType = RegExp.$1;
                             //这里判断refType是否是MultipartFile类型,如果是该类型,上传组件
@@ -523,7 +523,7 @@
                             var schema = trdata["schema"];
                             if (schema.hasOwnProperty("$ref")) {
                                 var ref = schema["$ref"];
-                                var regex = new RegExp("#/definitions/(.*)$", "ig");
+                                var regex = new RegExp("#/components/schemas/(.*)$", "ig");
                                 if (regex.test(ref)) {
                                     var refType = RegExp.$1;
                                     //这里判断refType是否是MultipartFile类型,如果是该类型,上传组件
@@ -874,21 +874,6 @@
             apiInfo.methodType) + '</code></td></tr>');
         tbody.append(methodType);
 
-        var consumesArr = DApiUI.getValue(apiInfo, "consumes", new Array(), true);
-
-
-        var consumes = $(
-            '<tr><th class="active" style="text-align: right;">consumes</th><td class="text-left"><code>' +
-            consumesArr + '</code></td></tr>');
-        tbody.append(consumes);
-
-        var producesArr = DApiUI.getValue(apiInfo, "produces", new Array(), true);
-
-        var produces = $(
-            '<tr><th class="active" style="text-align: right;">produces</th><td class="text-left"><code>' +
-            producesArr + '</code></td></tr>');
-        tbody.append(produces);
-
         //请求参数
         var args = $('<tr><th class="active" style="text-align: right;">请求参数</th></tr>');
         //判断是否有请求参数
@@ -914,7 +899,7 @@
                             ptype = schema["type"];
                         } else if (schema.hasOwnProperty("$ref")) {
                             //是否是ref
-                            var regex = new RegExp("#/definitions/(.*)$", "ig");
+                            var regex = new RegExp("#/components/schemas/(.*)$", "ig");
                             if (regex.test(schema["$ref"])) {
                                 refflag = true;
                                 ptype = RegExp.$1;
@@ -962,13 +947,6 @@
             args.append($('<td  class="text-left">暂无</td>'));
         }
         tbody.append(args);
-        //响应数据结构
-        var responseConstruct = $('<tr><th class="active" style="text-align: right;">响应Model</th></tr>');
-        var responseConstructtd = $('<td  class="text-left"></td>')
-        responseConstructtd.append(DApiUI.createResponseDefinition(apiInfo));
-        responseConstruct.append(responseConstructtd);
-        tbody.append(responseConstruct)
-
         //响应参数 add by xiaoymin 2017-8-20 16:17:18
 
         var respParams = $('<tr><th class="active" style="text-align: right;">响应参数说明</th></tr>');
@@ -977,6 +955,14 @@
         respParams.append(respPart);
 
         tbody.append(respParams);
+
+        //响应数据结构
+        var responseConstruct = $('<tr><th class="active" style="text-align: right;">响应示例</th></tr>');
+        var responseConstructtd = $('<td  class="text-left"></td>')
+        responseConstructtd.append(DApiUI.createResponseDefinition(apiInfo));
+        responseConstruct.append(responseConstructtd);
+        tbody.append(responseConstruct)
+
 
         //响应状态码
         var response = $('<tr><th class="active" style="text-align: right;">响应</th></tr>');
@@ -1029,66 +1015,69 @@
         var div = $("<div class='panel'></div>");
         if (resp.hasOwnProperty("200")) {
             var ok = resp["200"];
-            if (ok.hasOwnProperty("schema")) {
-                var schema = ok["schema"];
-                var ref = schema["$ref"];
-                var regex = new RegExp("#/definitions/(.*)$", "ig");
-                if (regex.test(ref)) {
-                    var refType = RegExp.$1;
-                    var definitionsArray = DApiUI.getDoc().data("definitionsArray");
-                    var mcs = DApiUI.getMenuConstructs();
-                    for (var k in mcs.definitions) {
-                        if (refType == k) {
-                            var table = $("<table class=\"table table-bordered\">");
-                            table.append('<thead><tr><th>参数名称</th><th>类型</th><th>说明</th></tr></thead>');
-                            var tp = mcs.definitions[refType];
-                            var props = tp["properties"];
+            if (ok.hasOwnProperty("content")) {
+                $.each(ok['content'], function (refKey, refContent) {
+                    if (refContent.hasOwnProperty("schema")) {
+                        var schema = refContent["schema"];
+                        var ref = schema["$ref"];
+                        var regex = new RegExp("#/components/schemas/(.*)$", "ig");
+                        if (regex.test(ref)) {
+                            var refType = RegExp.$1;
+                            var definitionsArray = DApiUI.getDoc().data("definitionsArray");
+                            for (var i = 0; i < definitionsArray.length; i++) {
+                                var definition = definitionsArray[i];
+                                if (definition.key == refType) {
+                                    var table = $("<table class=\"table table-bordered\">");
+                                    table.append('<thead><tr><th>参数名称</th><th>类型</th><th>说明</th></tr></thead>');
+                                    var props = definition.value;
 
-                            var tbody = $("<tbody></tbody>")
-                            for (var prop in props) {
-                                var pvalue = props[prop];
-                                var tr = $("<tr></tr>")
-                                //只遍历一级属性
-                                //判断是否是ref
-                                if (pvalue.hasOwnProperty("$ref")) {
-                                    var param_ref = pvalue["$ref"];
-                                    var regex1 = new RegExp("#/definitions/(.*)$", "ig");
-                                    if (regex1.test((param_ref))) {
-                                        var ptype = RegExp.$1;
-                                        tr.append($("<td>" + prop + "</td>"))
-                                        tr.append($("<td>" + ptype + "</td>"))
-                                        tr.append($("<td></td>"))
-                                        tbody.append(tr);
-                                        for (var j in mcs.definitions) {
-                                            if (ptype == j) {
-                                                var tpp = mcs.definitions[ptype];
-                                                var pp_props = tpp["properties"];
-                                                for (var prop1 in pp_props) {
-                                                    var tr1 = $("<tr></tr>")
-                                                    var pvalue1 = pp_props[prop1];
-                                                    tr1.append($("<td style='text-align: right;'>" + prop1 + "</td>"));
-                                                    tr1.append($("<td>" + DApiUI.getValue(pvalue1, "type", "string",
-                                                        true) + "</td>"));
-                                                    tr1.append($("<td>" + DApiUI.getValue(pvalue1, "description", "",
-                                                        true) + "</td>"));
-                                                    tbody.append(tr1);
+                                    var tbody = $("<tbody></tbody>")
+                                    for (var prop in props) {
+                                        var pvalue = props[prop];
+                                        var tr = $("<tr></tr>")
+                                        //只遍历一级属性
+                                        //判断是否是ref
+                                        if (pvalue.hasOwnProperty("$ref")) {
+                                            var param_ref = pvalue["$ref"];
+                                            var regex1 = new RegExp("#/components/schemas/(.*)$", "ig");
+                                            if (regex1.test((param_ref))) {
+                                                var ptype = RegExp.$1;
+                                                tr.append($("<td>" + prop + "</td>"))
+                                                tr.append($("<td>" + ptype + "</td>"))
+                                                tr.append($("<td></td>"))
+                                                tbody.append(tr);
+                                                for (var j in mcs.definitions) {
+                                                    if (ptype == j) {
+                                                        var tpp = mcs.definitions[ptype];
+                                                        var pp_props = tpp["properties"];
+                                                        for (var prop1 in pp_props) {
+                                                            var tr1 = $("<tr></tr>")
+                                                            var pvalue1 = pp_props[prop1];
+                                                            tr1.append($("<td style='text-align: right;'>" + prop1 + "</td>"));
+                                                            tr1.append($("<td>" + DApiUI.getValue(pvalue1, "type", "string",
+                                                                true) + "</td>"));
+                                                            tr1.append($("<td>" + DApiUI.getValue(pvalue1, "description", "",
+                                                                true) + "</td>"));
+                                                            tbody.append(tr1);
+                                                        }
+                                                    }
                                                 }
                                             }
+                                        } else {
+                                            tr.append($("<td>" + prop + "</td>"))
+                                            var type = DApiUI.toString(pvalue.type, "string");
+                                            tr.append($("<td>" + type + "</td>"));
+                                            tr.append($("<td>" + DApiUI.toString(pvalue.description, "") + "</td>"));
+                                            tbody.append(tr);
                                         }
                                     }
-                                } else {
-                                    tr.append($("<td>" + prop + "</td>"))
-                                    var type = DApiUI.toString(pvalue.type, "string");
-                                    tr.append($("<td>" + type + "</td>"));
-                                    tr.append($("<td>" + DApiUI.toString(pvalue.description, "") + "</td>"));
-                                    tbody.append(tr);
+                                    table.append(tbody);
+                                    div.append(table)
                                 }
                             }
-                            table.append(tbody);
-                            div.append(table)
                         }
                     }
-                }
+                });
             }
         }
         return div;
@@ -1100,38 +1089,42 @@
         var div = $("<div class='panel'>暂无</div>");
         if (resp.hasOwnProperty("200")) {
             var ok = resp["200"];
-            if (ok.hasOwnProperty("schema")) {
-                var schema = ok["schema"];
-                var ref = schema["$ref"];
-                var regex = new RegExp("#/definitions/(.*)$", "ig");
-                if (regex.test(ref)) {
-                    var refType = RegExp.$1;
-                    //这里去definitionsArrar查找,如果未找到,直接展示refType
-                    var flag = false;
-                    var htmlValue = refType;
-                    var definitionsArray = DApiUI.getDoc().data("definitionsArray");
-                    for (var i = 0; i < definitionsArray.length; i++) {
-                        var definition = definitionsArray[i];
-                        if (definition.key == refType) {
-                            flag = true;
-                            htmlValue = definition.value;
-                            break;
+            if (ok.hasOwnProperty('content')) {
+                $.each(ok['content'], function (refKey, refContent) {
+                    if (refContent.hasOwnProperty("schema")) {
+                        var schema = refContent["schema"];
+                        var ref = schema["$ref"];
+                        var regex = new RegExp("#/components/schemas/(.*)$", "ig");
+                        if (regex.test(ref)) {
+                            var refType = RegExp.$1;
+                            //这里去definitionsArrar查找,如果未找到,直接展示refType
+                            var flag = false;
+                            var htmlValue = refType;
+                            var definitionsArray = DApiUI.getDoc().data("definitionsArray");
+                            for (var i = 0; i < definitionsArray.length; i++) {
+                                var definition = definitionsArray[i];
+                                if (definition.key == refType) {
+                                    flag = true;
+                                    htmlValue = definition.value;
+                                    break;
 
+                                }
+                            }
+                            div.html("")
+                            if (flag) {
+                                div.JSONView(htmlValue);
+                            } else {
+                                div.html(refType);
+                            }
+                        } else {
+                            //未发现ref属性
+                            if (schema.hasOwnProperty("type")) {
+                                div.html("")
+                                div.html(schema["type"]);
+                            }
                         }
                     }
-                    div.html("")
-                    if (flag) {
-                        div.JSONView(htmlValue);
-                    } else {
-                        div.html(refType);
-                    }
-                } else {
-                    //未发现ref属性
-                    if (schema.hasOwnProperty("type")) {
-                        div.html("")
-                        div.html(schema["type"]);
-                    }
-                }
+                })
             }
         }
         return div;
@@ -1141,72 +1134,75 @@
     DApiUI.definitions = function (menu) {
         var definitionsArray = new Array();
         DApiUI.log("definitionsArray....")
-        if (menu != null && typeof (menu) != "undefined" && menu.hasOwnProperty("definitions")) {
-            var definitions = menu["definitions"];
-            for (var definition in definitions) {
-                var defiType = new definitionType();
-                defiType.key = definition;
-                //获取value
-                var value = definitions[definition];
-                if (checkUndefined(value)) {
-                    //是否有properties
-                    if (value.hasOwnProperty("properties")) {
-                        var properties = value["properties"];
-                        var defiTypeValue = {};
-                        for (var property in properties) {
-                            var propobj = properties[property];
-                            //默认string类型
-                            var propValue = "";
-                            //判断是否有类型
-                            if (propobj.hasOwnProperty("type")) {
-                                var type = propobj["type"];
-                                //判断是否有example
-                                if (propobj.hasOwnProperty("example")) {
-                                    propValue = propobj["example"];
-                                } else if (checkIsBasicType(type)) {
-                                    propValue = getBasicTypeValue(type);
+        if (menu != null && typeof (menu) != "undefined" && menu.hasOwnProperty("components")) {
+            var compontents = menu["components"];
+            if (compontents.hasOwnProperty('schemas')) {
+                var definitions = compontents['schemas'];
+                for (var definition in definitions) {
+                    var defiType = new definitionType();
+                    defiType.key = definition;
+                    //获取value
+                    var value = definitions[definition];
+                    if (checkUndefined(value)) {
+                        //是否有properties
+                        if (value.hasOwnProperty("properties")) {
+                            var properties = value["properties"];
+                            var defiTypeValue = {};
+
+                            for (var property in properties) {
+                                var propobj = properties[property];
+                                //默认string类型
+                                var propValue = "";
+                                //判断是否有类型
+                                if (propobj.hasOwnProperty("type")) {
+                                    var type = propobj["type"];
+                                    //判断是否有example
+                                    if (propobj.hasOwnProperty("example")) {
+                                        propValue = propobj["example"];
+                                    } else if (checkIsBasicType(type)) {
+                                        propValue = propobj;
+                                    } else {
+                                        if (type == "array") {
+                                            propValue = new Array();
+                                            var items = propobj["items"];
+                                            var ref = items["$ref"];
+                                            var regex = new RegExp("#/components/schemas/(.*)$", "ig");
+                                            if (regex.test(ref)) {
+                                                var refType = RegExp.$1;
+                                                //这里需要递归判断是否是本身,如果是,则退出递归查找
+                                                if (refType != definition) {
+                                                    propValue.push(findRefDefinition(refType, definitions));
+                                                }
+                                            }
+                                        }
+                                    }
                                 } else {
-                                    if (type == "array") {
-                                        propValue = new Array();
-                                        var items = propobj["items"];
-                                        var ref = items["$ref"];
-                                        var regex = new RegExp("#/definitions/(.*)$", "ig");
+                                    if (propobj.hasOwnProperty("$ref")) {
+                                        var ref = propobj["$ref"];
+                                        var regex = new RegExp("#/components/schemas/(.*)$", "ig");
                                         if (regex.test(ref)) {
                                             var refType = RegExp.$1;
                                             //这里需要递归判断是否是本身,如果是,则退出递归查找
                                             if (refType != definition) {
-                                                propValue.push(findRefDefinition(refType, definitions));
+                                                propValue = findRefDefinition(refType, definitions);
+                                            } else {
+                                                propValue = {};
                                             }
+
                                         }
+                                    } else {
+                                        propValue = {};
                                     }
                                 }
-
-                            } else {
-                                if (propobj.hasOwnProperty("$ref")) {
-                                    var ref = propobj["$ref"];
-                                    var regex = new RegExp("#/definitions/(.*)$", "ig");
-                                    if (regex.test(ref)) {
-                                        var refType = RegExp.$1;
-                                        //这里需要递归判断是否是本身,如果是,则退出递归查找
-                                        if (refType != definition) {
-                                            propValue = findRefDefinition(refType, definitions);
-                                        } else {
-                                            propValue = {};
-                                        }
-
-                                    }
-                                } else {
-                                    propValue = {};
-                                }
+                                defiTypeValue[property] = propValue;
                             }
-                            defiTypeValue[property] = propValue;
+                            defiType.value = defiTypeValue;
+                        } else {
+                            defiType.value = {};
                         }
-                        defiType.value = defiTypeValue;
-                    } else {
-                        defiType.value = {};
                     }
+                    definitionsArray.push(defiType);
                 }
-                definitionsArray.push(defiType);
             }
         }
         DApiUI.getDoc().data("definitionsArray", definitionsArray);
@@ -1217,7 +1213,7 @@
     }
 
     function checkIsBasicType(type) {
-        var basicTypes = ["string", "integer", "number", "object", "boolean"];
+        var basicTypes = ["string", "int", "double", "object", "boolean"];
         var flag = false;
         if ($.inArray(type, basicTypes) > -1) {
             flag = true;
@@ -1228,7 +1224,7 @@
     function getBasicTypeValue(type) {
         var propValue = "";
         //是否是基本类型
-        if (type == "integer") {
+        if (type == "int") {
             propValue = 0;
         }
         if (type == "boolean") {
@@ -1237,7 +1233,7 @@
         if (type == "object") {
             propValue = {};
         }
-        if (type == "number") {
+        if (type == "double") {
             propValue = parseFloat(0);
         }
         return propValue;
@@ -1263,13 +1259,13 @@
                             if (propobj.hasOwnProperty("example")) {
                                 propValue = propobj["example"];
                             } else if (checkIsBasicType(type)) {
-                                propValue = getBasicTypeValue(type);
+                                propValue = propobj;
                             } else {
                                 if (type == "array") {
                                     propValue = new Array();
                                     var items = propobj["items"];
                                     var ref = items["$ref"];
-                                    var regex = new RegExp("#/definitions/(.*)$", "ig");
+                                    var regex = new RegExp("#/components/schemas/(.*)$", "ig");
                                     if (regex.test(ref)) {
                                         var refType = RegExp.$1;
                                         if (refType != definitionName) {
@@ -1368,10 +1364,8 @@
         this.description = "";
         this.operationId = "";
         this.parameters = new Array();
-        this.produces = new Array();
         this.responses = {};
         this.methodType = "post";
-        this.consumes = new Array();
         this.summary = "";
         if (options != null && typeof (options) != 'undefined') {
             this.tag = options.tags[0];
@@ -1379,9 +1373,7 @@
             this.operationId = options.operationId;
             this.summary = options.summary;
             this.parameters = options.parameters;
-            this.produces = options.produces;
             this.responses = options.responses;
-            this.consumes = options.consumes;
         }
 
     }
