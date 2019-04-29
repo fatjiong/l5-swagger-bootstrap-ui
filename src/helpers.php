@@ -14,7 +14,7 @@ if (!function_exists('l5_swagger_bootstrap_ui_dist_path')) {
     function l5_swagger_bootstrap_ui_dist_path($asset = null)
     {
 
-        $path = base_path('vendor/x-class/l5-swagger-bootstrap-ui/resources/static/');
+        $path = base_path('vendor/fatjiong/l5-swagger-bootstrap-ui/resources/static/');
 
         if (!$asset) {
             return realpath($path);
