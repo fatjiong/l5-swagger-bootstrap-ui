@@ -4,12 +4,12 @@
     <meta charset="UTF-8">
     <title>{{config('l5-swagger.api.title')}}</title>
     <link rel="shortcut icon" href="{{ l5_swagger_bootstrap_ui_asset('api.ico') }}"/>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/1.9.1/jquery.js"></script>
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet">
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/jquery-jsonview/1.2.3/jquery.jsonview.min.css" rel="stylesheet">
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-jsonview/1.2.3/jquery.jsonview.min.js"></script>
+    <script src="{{ l5_swagger_bootstrap_ui_asset('jquery1.9.1.js') }}"></script>
+    <link href="{{ l5_swagger_bootstrap_ui_asset('bootstrap3.3.7.min.css') }}" rel="stylesheet">
+    <link href="{{ l5_swagger_bootstrap_ui_asset('jquery1.2.3.jsonview.min.css') }}" rel="stylesheet">
+    <script src="{{ l5_swagger_bootstrap_ui_asset('jquery1.2.3.jsonview.min.js') }}"></script>
 
-    <script src="https://unpkg.com/sweetalert/dist/sweetalert.min.js"></script>
+    <script src="{{ l5_swagger_bootstrap_ui_asset('sweetalert.min.js') }}"></script>
     <link href="{{ l5_swagger_bootstrap_ui_asset('swagger-ui.css') }}" rel="stylesheet">
 
 </head>
@@ -64,7 +64,7 @@
         </table>
     </div>
 </div>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.7/js/bootstrap.min.js"></script>
+<script src="{{ l5_swagger_bootstrap_ui_asset('bootstrap3.3.7.min.js') }}"></script>
 
 <script>
     window.docUrl = "{!! $urlToDocs !!}";
